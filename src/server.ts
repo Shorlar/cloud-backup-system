@@ -1,8 +1,7 @@
-import bodyParser from "body-parser";
-import express from "express";
+import { configDotenv } from "dotenv";
+import App from "./app";
 
-const app = express();
-app.use(bodyParser.json())
-const port = process.env.PORT || 3000;
+const port = 3000;
+const app = new App(port)
 
-app.listen(port, () => console.log("server is up"));
+app.listen();
