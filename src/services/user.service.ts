@@ -3,6 +3,7 @@ import { User } from "../models/user.entity";
 import UserDetails from "../types/createUser.type";
 import * as bcrypt from "bcrypt";
 import JwtService from "./jwt.services";
+import SignInDetails from "../types/signIn.types";
 
 class UserService {
   private repository = connection.getRepository(User);
@@ -30,15 +31,25 @@ class UserService {
 
   public async getUser(email: string): Promise<User | null> {
     const user = await this.repository.findOne({ where: { email } });
-    if (user) {
-      // throw error
-      return user;
-    }
-    throw new Error("No user found");
+    return user;
   }
 
-  public async signIn(){
-    
+  public async signIn(userDetails: SignInDetails) {
+    const { email, password } = userDetails;
+    if (!email || !password) {
+      // hanlde error
+    }
+    const user = await this.getUser(email);
+    if (user) {
+      const isPasswordValid = await bcrypt.compare(user.password, password);
+      if(isPasswordValid){
+        const accessToken = this.jwtService.generateToken(email);
+        return { token: accessToken };
+      }else{
+        // throw error
+      }
+    }
+    // throw error
   }
 }
 
