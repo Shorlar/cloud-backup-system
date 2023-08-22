@@ -4,6 +4,8 @@ import UserDetails from "../types/createUser.type";
 import * as bcrypt from "bcrypt";
 import JwtService from "./jwt.services";
 import SignInDetails from "../types/signIn.types";
+import HttpException from "../exception/http.exception";
+import { DatabaseErrorCode } from "../enums/db.enum";
 
 class UserService {
   private repository = connection.getRepository(User);
@@ -15,18 +17,29 @@ class UserService {
 
   public async createUser(
     userDetails: UserDetails
-  ): Promise<Record<string, any>> {
+  ): Promise<Record<string, any> | undefined> {
     const { email, password, fullName } = userDetails;
     if (!email || !password || !fullName) {
-      // throw an error
+      throw new HttpException(
+        400,
+        "email, password or fullName is not provided"
+      );
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const accessToken = this.jwtService.generateToken(email);
-    await this.repository.save({
-      ...userDetails,
-      password: hashedPassword,
-    });
-    return { token: accessToken };
+    try {
+      await this.repository.save({
+        ...userDetails,
+        password: hashedPassword,
+      });
+      return { token: accessToken };
+    } catch (error: any) {
+      const message =
+        error.code === DatabaseErrorCode.DUPLICATE_KEY
+          ? "email already exist"
+          : "";
+      throw new HttpException(500, message);
+    }
   }
 
   public async getUser(email: string): Promise<User | null> {
@@ -37,19 +50,19 @@ class UserService {
   public async signIn(userDetails: SignInDetails) {
     const { email, password } = userDetails;
     if (!email || !password) {
-      // hanlde error
+      throw new HttpException(400, "Invalid Credentials");
     }
     const user = await this.getUser(email);
     if (user) {
-      const isPasswordValid = await bcrypt.compare(password,user.password);
-      if(isPasswordValid){
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (isPasswordValid) {
         const accessToken = this.jwtService.generateToken(email);
         return { token: accessToken };
-      }else{
-        throw new Error("Invalid credentials")
+      } else {
+        throw new HttpException(400, "Invalid Credentials");
       }
     }
-    // throw error
+    throw new HttpException(400, "Invalid Credentials");
   }
 }
 
