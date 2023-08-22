@@ -41,12 +41,12 @@ class UserService {
     }
     const user = await this.getUser(email);
     if (user) {
-      const isPasswordValid = await bcrypt.compare(user.password, password);
+      const isPasswordValid = await bcrypt.compare(password,user.password);
       if(isPasswordValid){
         const accessToken = this.jwtService.generateToken(email);
         return { token: accessToken };
       }else{
-        // throw error
+        throw new Error("Invalid credentials")
       }
     }
     // throw error
