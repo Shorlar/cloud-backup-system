@@ -27,6 +27,19 @@ class UserService {
     });
     return { token: accessToken };
   }
+
+  public async getUser(email: string): Promise<User | null> {
+    const user = await this.repository.findOne({ where: { email } });
+    if (user) {
+      // throw error
+      return user;
+    }
+    throw new Error("No user found");
+  }
+
+  public async signIn(){
+    
+  }
 }
 
 export default UserService;
