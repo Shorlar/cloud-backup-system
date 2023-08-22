@@ -1,4 +1,5 @@
 import { sign, verify } from "jsonwebtoken";
+import HttpException from "../exception/http.exception";
 
 class JwtService {
   private key = process.env.JWT_KEY;
@@ -12,7 +13,8 @@ class JwtService {
       });
       return token;
     }
-    throw new Error("Unable to get secret key");
+    console.log("Unable to get secret key");
+    throw new HttpException(500, "");
   }
 
   public verifyToken(token: string) {

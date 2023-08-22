@@ -24,8 +24,12 @@ class AuthController {
     next: express.NextFunction
   ) => {
     const userDetails: UserDetails = request.body;
-    const user = await this.userService.createUser(userDetails);
-    response.send(user);
+    try {
+      const user = await this.userService.createUser(userDetails);
+      response.send(user);
+    } catch (error) {
+      next(error)
+    }
   };
 
   private signIn = async (
@@ -34,8 +38,12 @@ class AuthController {
     next: express.NextFunction
   ) => {
     const userDetails: SignInDetails = request.body;
-    const accessToken = await this.userService.signIn(userDetails);
-    response.send(accessToken);
+    try {
+      const accessToken = await this.userService.signIn(userDetails);
+        response.send(accessToken);
+    } catch (error) {
+      next(error)
+    }
   };
 }
 export default AuthController;
