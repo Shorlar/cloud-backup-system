@@ -1,5 +1,9 @@
 import App from "./app";
 import connection from "../config/database";
+import dotenv from "dotenv";
+
+
+dotenv.config();
 
 const port = 3000;
 const app = new App(port);
