@@ -1,9 +1,9 @@
 import App from "./app";
-import databaseConfiguration from "../config/database";
+import connection from "../config/database";
 
 const port = 3000;
 const app = new App(port);
-databaseConfiguration
+connection
   .initialize()
   .then(() => {
     console.log("Connected to database");
