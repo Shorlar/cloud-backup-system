@@ -3,10 +3,10 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const databaseConfiguration: DataSource = new DataSource({
+const connection: DataSource = new DataSource({
   type: "postgres",
   host: process.env.DB_HOST,
-  port: 5432,
+  port: 5433,
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
@@ -14,4 +14,4 @@ const databaseConfiguration: DataSource = new DataSource({
   synchronize: true,
 });
 
-export default databaseConfiguration;
+export default connection;
