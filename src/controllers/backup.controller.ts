@@ -1,9 +1,10 @@
 import connection from "../../config/database";
-import express from "express";
+import express, { Request } from "express";
 import { File } from "../models/file.entity";
 import { Folder } from "../models/folder.entity";
 import multer from "multer";
 import BackUpService from "../services/backup.service";
+import validateTokenMiddleware from "../middleware/validate-token.middleware";
 
 class BackUpController {
   public path = "/backup";
@@ -22,21 +23,18 @@ class BackUpController {
   }
 
   private initializeRoutes() {
-    this.router.post(
-      `${this.path}/upload`,
-      this.upload.single("file"),
-      this.uploadFile
-    );
-    this.router.get(`${this.path}/download`, this.downloadFile);
+      this.router.post(`${this.path}/upload`, validateTokenMiddleware, this.upload.single("file"), this.uploadFile)
+      this.router.get(`${this.path}/download`, validateTokenMiddleware,this.downloadFile);
   }
 
   private uploadFile = async (
-    request: express.Request,
+    request: any,
     response: express.Response,
     next: express.NextFunction
   ) => {
+    console.log(request.user)
     console.log(request.file);
-    const file = await this.backupService.uploadFile()
+    const file = await this.backupService.uploadFile();
   };
 
   private downloadFile = async (
