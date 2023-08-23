@@ -6,13 +6,15 @@ import JwtService from "./jwt.services";
 import SignInDetails from "../types/signIn.types";
 import HttpException from "../exception/http.exception";
 import { DatabaseErrorCode } from "../enums/db.enum";
+import { Repository } from "typeorm";
 
 class UserService {
-  private repository = connection.getRepository(User);
+  private repository: Repository<User>;
   private jwtService: JwtService;
 
-  constructor() {
-    this.jwtService = new JwtService();
+  constructor(jwtService: JwtService, repository: Repository<User>) {
+    this.repository = repository
+    this.jwtService = jwtService;
   }
 
   public async createUser(
@@ -34,6 +36,7 @@ class UserService {
       });
       return { token: accessToken };
     } catch (error: any) {
+      console.log(error)
       const message =
         error.code === DatabaseErrorCode.DUPLICATE_KEY
           ? "email already exist"
