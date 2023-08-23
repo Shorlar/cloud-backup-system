@@ -2,18 +2,21 @@ import express from "express";
 import * as bodyParser from "body-parser";
 import AuthController from "./controllers/auth.controller";
 import errorMiddleware from "./middleware/error.middleware";
+import BackUpController from "./controllers/backup.controller";
 
 class App {
   public app: express.Application;
   public port: number;
   private authController: AuthController;
+  private backupController: BackUpController;
 
   constructor(port: number) {
     this.app = express();
     this.port = port;
     this.authController = new AuthController();
+    this.backupController = new BackUpController();
     this.initializeMiddlewares();
-    this.initializeControllers([this.authController]);
+    this.initializeControllers([this.authController, this.backupController]);
     this.initializeErrorHandlers();
   }
 
