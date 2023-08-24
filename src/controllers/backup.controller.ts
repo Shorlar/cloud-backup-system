@@ -35,7 +35,7 @@ class BackUpController {
       this.uploadFile
     );
     this.router.get(
-      `${this.path}/download`,
+      `${this.path}/download/:id`,
       validateTokenMiddleware,
       this.downloadFile
     );
@@ -109,9 +109,21 @@ class BackUpController {
   };
 
   private downloadFile = async (
-    request: express.Request,
+    request: any,
     response: express.Response,
     next: express.NextFunction
-  ) => {};
+  ) => {
+    try {
+      const { filename, file, mimetype } = await this.backupService.downloadFile(request);
+      response.setHeader(
+        "Content-Disposition",
+        `attachment; filename=${filename}`
+      );
+      response.setHeader("Content-Type", mimetype);
+      response.send(file);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 export default BackUpController;

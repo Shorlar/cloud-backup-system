@@ -15,7 +15,7 @@ class CloudStorageService {
     });
   }
 
-  public async upload(file: any) {
+  public async upload(file: any): Promise<string> {
     const filename = `${file.originalname}${new Date().getTime()}`;
     const bucket = await this.cloudStorage.bucket("mybackupsys");
     const upload = bucket.file(filename);
@@ -31,6 +31,12 @@ class CloudStorageService {
     stream.end(file.buffer);
     return filename;
   }
-}
 
+  public async download(filename: string){
+    const bucket = await this.cloudStorage.bucket("mybackupsys");
+    const file = bucket.file(filename)
+    const fileBuffer = await file.download()
+    return fileBuffer
+  }
+}
 export default CloudStorageService;

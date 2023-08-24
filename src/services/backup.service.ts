@@ -23,7 +23,6 @@ class BackUpService {
 
   public async uploadFile(request: any) {
     const file = request.file;
-    console.log(request);
     if (!file) {
       throw new HttpException(400, "No file uploaded");
     }
@@ -88,6 +87,20 @@ class BackUpService {
     return {
       message: "Successful",
     };
+  }
+
+  public async downloadFile(request: any){
+    const userId = request.user.id;
+    const fileId = request.params.id
+    if(!fileId) throw new HttpException(400, "provide file ID")
+    const file = await this.fileRepository.findOne({where: {user: userId, id: fileId}})
+    if(!file) throw new HttpException(404, "File does not exist")
+    const fileBuffer = await this.cloudStorageService.download(file.filename)
+    return {
+        filename: file.name,
+        mimetype: file.mime_type,
+        file: fileBuffer
+    }
   }
 }
 export default BackUpService;
