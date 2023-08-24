@@ -19,8 +19,12 @@ class JwtService {
 
   public verifyToken(token: string) {
     if (this.key) {
-      const email = verify(token, this.key);
-      return email;
+      try {
+        const email = verify(token, this.key);
+        return email;
+      } catch (error) {
+        throw new HttpException(400, "Invalid or missing token");
+      }
     }
   }
 }
