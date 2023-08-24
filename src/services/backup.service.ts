@@ -33,5 +33,30 @@ class BackUpService {
     const uploadedFile = await this.fileRepository.save(newFile);
     return new FileResponeDTO(uploadedFile);
   }
+
+  public async createFolder(request: any) {
+    const user = request.user;
+    const { name } = request.body;
+    const newFolder = new Folder();
+    newFolder.name = name;
+    newFolder.user = user;
+    const folder = await this.folderRepository.save(newFolder);
+    return folder;
+  }
+
+  public async getFiles(request: any) {
+    const userId = request.user.userId;
+    const userFolders = await this.folderRepository.find({
+      where: { user: userId },
+    });
+    const files = await this.fileRepository.find({
+      where: { user: userId, folder: false },
+    });
+    const mappedFiles = files.map((file) => new FileResponeDTO(file));
+    return {
+      folders: userFolders,
+      files: mappedFiles,
+    };
+  }
 }
 export default BackUpService;
