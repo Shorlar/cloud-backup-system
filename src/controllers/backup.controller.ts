@@ -1,10 +1,11 @@
 import connection from "../../config/database";
-import express, { Request } from "express";
+import express from "express";
 import { File } from "../models/file.entity";
 import { Folder } from "../models/folder.entity";
 import multer from "multer";
 import BackUpService from "../services/backup.service";
 import validateTokenMiddleware from "../middleware/validate-token.middleware";
+import CloudStorageService from "../services/cloud.service";
 
 class BackUpController {
   public path = "/backup";
@@ -12,19 +13,32 @@ class BackUpController {
   private backupService: BackUpService;
   private fileRepository = connection.getRepository(File);
   private folderRepository = connection.getRepository(Folder);
-  private upload = multer();
+  private upload: multer.Multer;
+  private cloudStorageService: CloudStorageService;
 
   constructor() {
+    this.upload = multer({ limits: { fileSize: 200 * 1024 * 1024 } });
+    this.cloudStorageService = new CloudStorageService();
     this.backupService = new BackUpService(
       this.fileRepository,
-      this.folderRepository
+      this.folderRepository,
+      this.cloudStorageService
     );
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
-      this.router.post(`${this.path}/upload`, validateTokenMiddleware, this.upload.single("file"), this.uploadFile)
-      this.router.get(`${this.path}/download`, validateTokenMiddleware,this.downloadFile);
+    this.router.post(
+      `${this.path}/upload`,
+      validateTokenMiddleware,
+      this.upload.single("file"),
+      this.uploadFile
+    );
+    this.router.get(
+      `${this.path}/download`,
+      validateTokenMiddleware,
+      this.downloadFile
+    );
   }
 
   private uploadFile = async (
@@ -32,9 +46,12 @@ class BackUpController {
     response: express.Response,
     next: express.NextFunction
   ) => {
-    console.log(request.user)
-    console.log(request.file);
-    const file = await this.backupService.uploadFile();
+    try {
+      const file = await this.backupService.uploadFile(request);
+      response.send(file);
+    } catch (error) {
+      next(error);
+    }
   };
 
   private downloadFile = async (
