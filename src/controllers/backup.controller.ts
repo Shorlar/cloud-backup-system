@@ -44,6 +44,11 @@ class BackUpController {
       validateTokenMiddleware,
       this.getFiles
     );
+    this.router.patch(
+      `${this.path}/files`,
+      validateTokenMiddleware,
+      this.moveFilesToFolder
+    );
     this.router.post(
       `${this.path}/folder`,
       validateTokenMiddleware,
@@ -85,6 +90,19 @@ class BackUpController {
     try {
       const folder = await this.backupService.getFiles(request);
       response.send(folder);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  private moveFilesToFolder = async (
+    request: any,
+    response: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      const updated = await this.backupService.moveFiles(request);
+      response.send(updated);
     } catch (error) {
       next(error);
     }
