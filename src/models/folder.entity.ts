@@ -3,9 +3,11 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./user.entity";
+import { File } from "./file.entity";
 
 @Entity()
 export class Folder {
@@ -17,6 +19,9 @@ export class Folder {
 
   @Column()
   name!: string;
+
+  @OneToMany(() => File, (file) => file.folder, { eager: true })
+  file!: File[]
 
   @CreateDateColumn()
   created_date!: Date;

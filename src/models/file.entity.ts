@@ -16,8 +16,8 @@ export class File {
   @ManyToOne(() => User, (user) => user.id, { eager: false })
   user!: User;
 
-  @ManyToOne(() => Folder, (folder) => folder.id, { nullable: true })
-  folder!: Folder;
+  @ManyToOne(() => Folder, (folder) => folder.file, { nullable: true })
+  folder: Folder | undefined;
 
   @Column()
   name!: string;
