@@ -11,13 +11,13 @@ import { Folder } from "./folder.entity";
 @Entity()
 export class File {
   @PrimaryGeneratedColumn()
-  id: number | undefined;
+  id!: number;
 
-  @ManyToOne(() => User, (user) => user.id)
-  user: User | undefined;
+  @ManyToOne(() => User, (user) => user.id, { eager: false })
+  user!: User;
 
   @ManyToOne(() => Folder, (folder) => folder.id, { nullable: true })
-  folder: Folder | undefined;
+  folder!: Folder;
 
   @Column()
   name!: string;
@@ -28,9 +28,12 @@ export class File {
   @Column()
   mime_type!: string;
 
+  @Column()
+  filename!: string;
+
   @Column({ default: false })
   unsafe!: boolean;
 
   @CreateDateColumn()
-  uploaded_at: Date | undefined;
+  uploaded_at!: Date;
 }
