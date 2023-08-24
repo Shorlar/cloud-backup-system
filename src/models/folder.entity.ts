@@ -4,21 +4,20 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from "typeorm";
 import { User } from "./user.entity";
 
 @Entity()
 export class Folder {
   @PrimaryGeneratedColumn()
-  id: number | undefined;
+  id!: number;
 
-  @ManyToOne(() => User, (user) => user.id)
-  user: User | undefined;
+  @ManyToOne(() => User, (user) => user.id, { eager: false })
+  user!: User;
 
   @Column()
-    name!: string;
+  name!: string;
 
   @CreateDateColumn()
-  created_date: Date | undefined;
+  created_date!: Date;
 }

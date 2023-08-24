@@ -39,6 +39,16 @@ class BackUpController {
       validateTokenMiddleware,
       this.downloadFile
     );
+    this.router.get(
+      `${this.path}/files`,
+      validateTokenMiddleware,
+      this.getFiles
+    );
+    this.router.post(
+      `${this.path}/folder`,
+      validateTokenMiddleware,
+      this.createFolder
+    );
   }
 
   private uploadFile = async (
@@ -49,6 +59,32 @@ class BackUpController {
     try {
       const file = await this.backupService.uploadFile(request);
       response.send(file);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  private createFolder = async (
+    request: any,
+    response: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      const folder = await this.backupService.createFolder(request);
+      response.send(folder);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  private getFiles = async (
+    request: any,
+    response: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      const folder = await this.backupService.getFiles(request);
+      response.send(folder);
     } catch (error) {
       next(error);
     }
