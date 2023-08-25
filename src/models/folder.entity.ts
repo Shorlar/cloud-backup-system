@@ -23,6 +23,6 @@ export class Folder {
   @OneToMany(() => File, (file) => file.folder, { eager: true })
   file!: File[]
 
-  @CreateDateColumn()
+  @CreateDateColumn({type: "timestamp"})
   created_date!: Date;
 }
