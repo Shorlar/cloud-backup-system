@@ -18,11 +18,15 @@ async function validateTokenMiddleware(
     if (auth[0] === "Bearer")
       new HttpException(400, "Invalid or missing token");
     const token = auth[1];
-    const jwtPayload = jwtService.verifyToken(token) as TokenType;
-    const userEmail = jwtPayload.email;
-    const user = await repository.findOne({ where: { email: userEmail } });
-    request.user = user;
-    next()
+    try {
+      const jwtPayload = jwtService.verifyToken(token) as TokenType;
+      const userEmail = jwtPayload.email;
+      const user = await repository.findOne({ where: { email: userEmail } });
+      request.user = user;
+      next() 
+    } catch (error) {
+      next(error)
+    }
   } else {
     next(new HttpException(400, "Invalid or missing token"));
   }
