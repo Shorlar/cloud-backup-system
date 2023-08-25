@@ -34,6 +34,6 @@ export class File {
   @Column({ default: false })
   unsafe!: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({type: "timestamp"})
   uploaded_at!: Date;
 }
